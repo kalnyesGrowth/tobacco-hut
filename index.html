@@ -98,7 +98,7 @@ img{max-width:100%;display:block}
 
 /* ====================== PRODUCTS ====================== */
 .products-section{padding:var(--section-padding);background:var(--color-bg-alt);position:relative}
-.products-section::before{content:'';position:absolute;inset:0;background:url('https://images.pexels.com/photos/1907096/pexels-photo-1907096.jpeg?auto=compress&cs=tinysrgb&w=1920') center/cover no-repeat;opacity:0.05}
+.products-section::before{content:'';position:absolute;inset:0;background:url('https://images.pexels.com/photos/1867763/pexels-photo-1867763.jpeg?auto=compress&cs=tinysrgb&w=1920') center/cover no-repeat;opacity:0.05}
 .products-header{text-align:center;margin-bottom:60px;position:relative}
 .products-header .section-subtitle{margin:0 auto}
 .products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;position:relative}
@@ -341,8 +341,8 @@ h1{font-size:var(--text-2xl)}
     <h2>Age Verification</h2>
     <p>You must be 21 years or older to enter this site. By clicking "Yes" you confirm that you are of legal smoking age.</p>
     <div class="age-gate-buttons">
-      <button class="btn-ghost" onclick="document.getElementById('ageGate').classList.add('hidden');sessionStorage.setItem('ageVerified','1')">Yes, I'm 21+</button>
-      <button class="btn-ghost age-gate-deny" onclick="window.location='https://google.com'">No, I'm Under 21</button>
+      <button type="button" class="btn-ghost" onclick="document.getElementById('ageGate').classList.add('hidden');sessionStorage.setItem('ageVerified','1')">Yes, I'm 21+</button>
+      <button type="button" class="btn-ghost age-gate-deny" onclick="window.location='https://google.com'">No, I'm Under 21</button>
     </div>
   </div>
 </div>
@@ -783,16 +783,16 @@ h1{font-size:var(--text-2xl)}
         <div class="form-row">
           <div class="form-group">
             <label for="cName">Name</label>
-            <input type="text" id="cName" placeholder="Your name" required>
+            <input type="text" id="cName" placeholder="Your name" required autocomplete="name">
           </div>
           <div class="form-group">
             <label for="cPhone">Phone</label>
-            <input type="tel" id="cPhone" placeholder="(540) 000-0000">
+            <input type="tel" id="cPhone" placeholder="(540) 000-0000" autocomplete="tel">
           </div>
         </div>
         <div class="form-group">
           <label for="cEmail">Email</label>
-          <input type="email" id="cEmail" placeholder="your@email.com" required>
+          <input type="email" id="cEmail" placeholder="your@email.com" required autocomplete="email">
         </div>
         <div class="form-group">
           <label for="cSubject">Subject</label>
@@ -873,7 +873,7 @@ h1{font-size:var(--text-2xl)}
       </div>
     </div>
     <div class="footer-bottom">
-      <p>2026 Tobacco Hut Vape & Cigars Stafford. All rights reserved. Must be 21+ to purchase.</p>
+      <p>&copy; 2026 Tobacco Hut Vape &amp; Cigars Stafford. All rights reserved. Must be 21+ to purchase.</p>
       <div class="footer-social">
         <a href="https://www.facebook.com/tobaccohut.vape/" target="_blank" rel="noopener" aria-label="Facebook">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
@@ -922,7 +922,7 @@ h1{font-size:var(--text-2xl)}
     <button class="popup-close" onclick="this.parentElement.parentElement.classList.remove('active');sessionStorage.setItem('firstVisitSeen','1')">&times;</button>
     <h3>New to Tobacco Hut?</h3>
     <p>Stop by and mention this website to get personalized product recommendations from our expert staff. We are open 9 AM to 10 PM, every day.</p>
-    <a href="https://www.google.com/maps/dir//Tobacco+Hut+Vape+%26+Cigars+Stafford,+253+Garrisonville+Rd+Suite+B,+Stafford,+VA+22554" target="_blank" rel="noopener" class="btn-solid" style="width:100%;display:block;text-align:center">Get Directions</a>
+    <a href="tel:+15404264941" class="btn-solid" style="width:100%;display:block;text-align:center">Call (540) 426-4941</a>
   </div>
 </div>
 
@@ -960,9 +960,16 @@ h1{font-size:var(--text-2xl)}
     }
     animId=requestAnimationFrame(draw);
   }
+  function drawFallback(){
+    var img=new Image();
+    img.onload=function(){ctx.drawImage(img,0,0,canvas.width,canvas.height)};
+    img.src='https://images.pexels.com/photos/1907096/pexels-photo-1907096.jpeg?auto=compress&cs=tinysrgb&w=1920';
+  }
   window.addEventListener('resize',resize);
   resize();
   video.addEventListener('canplay',function(){draw()});
+  video.addEventListener('error',drawFallback);
+  setTimeout(function(){if(video.readyState<2)drawFallback()},3000);
   if(video.readyState>=2)draw();
 })();
 
@@ -1021,7 +1028,7 @@ h1{font-size:var(--text-2xl)}
     }
     update(){
       this.x+=this.vx+Math.sin(this.life*0.02)*0.5;
-      this.y+=this.vy*scrollIntensity;
+      this.y+=this.vy*Math.max(0.3,scrollIntensity);
       this.life--;
       if(this.life<=0)this.reset();
     }
@@ -1068,7 +1075,7 @@ h1{font-size:var(--text-2xl)}
 (function(){
   let shown=false;
   document.addEventListener('mouseout',function(e){
-    if(!shown&&e.clientY<5&&!sessionStorage.getItem('exitPopupSeen')){
+    if(!shown&&!e.relatedTarget&&e.clientY<5&&!sessionStorage.getItem('exitPopupSeen')){
       document.getElementById('exitPopup').classList.add('active');
       sessionStorage.setItem('exitPopupSeen','1');
       shown=true;
